@@ -1,5 +1,5 @@
 -- // AUTO-EXECUTE RELOADER \\ --
-local script_to_run = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/nigmaBoy/autofarm/refs/heads/main/main"))()]]
+local script_to_run = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jojosbytes/AutoFarm/refs/heads/main/dahood.lua"))()]]
 if syn and syn.queue_on_teleport then
     syn.queue_on_teleport(script_to_run)
 elseif queue_on_teleport then
