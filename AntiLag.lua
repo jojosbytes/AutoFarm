@@ -84,7 +84,7 @@ end)
 --// 8. Optional: cap FPS super low (executor-dependent)
 pcall(function()
     if setfpscap then
-        setfpscap(15) -- go lower if you want even less CPU
+        setfpscap(25) -- go lower if you want even less CPU
     end
 end)
 
