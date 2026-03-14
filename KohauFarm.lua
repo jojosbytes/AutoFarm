@@ -1,3 +1,10 @@
+local script_to_run = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/jojosbytes/AutoFarm/refs/heads/main/KohauFarm.lua"))()]]
+
+if syn and syn.queue_on_teleport then
+	syn.queue_on_teleport(script_to_run)
+elseif queue_on_teleport then
+	queue_on_teleport(script_to_run)
+end
 
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 local Players = game:GetService('Players')
@@ -30,15 +37,8 @@ local wt = 0.1
 local fridge = nil
 
 local Teams = game:GetService("Teams")
-local team = Teams["\240\159\140\184 Executives"]
 
 local CanFarm = true
-
-for i,scr in pairs(Player:GetDescendants()) do
-	if scr:IsA('LocalScript') then
-		scr:Destroy()
-	end
-end
 
 local function SetUpScript()
 	local calc = Vector3.new(-111, 3, -434)
