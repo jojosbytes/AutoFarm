@@ -226,6 +226,11 @@ local function IsExecutivesEmpty()
 	return #execTeam:GetPlayers()
 end
 
+if IsExecutivesEmpty() ~= 0 then
+	HopToLowest()
+    return
+end
+
 task.spawn(function()
 	Character.ChildAdded:Connect(function(child)
 		HandDrink()
