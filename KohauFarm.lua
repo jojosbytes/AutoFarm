@@ -78,6 +78,8 @@ local function EquipAllCoffee()
 	end
 end
 
+-- FIX: Use game:HttpGet instead of HttpService:GetAsync so the executor
+-- can properly intercept and make the HTTP call
 local function GetServers(cursor)
 	local url = "https://games.roblox.com/v1/games/"..PLACE_ID.."/servers/Public?sortOrder=Asc&limit=100"
 	if cursor then
@@ -85,14 +87,22 @@ local function GetServers(cursor)
 	end
 
 	local success, result = pcall(function()
-		return HttpService:GetAsync(url)
+		return game:HttpGet(url)
 	end)
 
-	if not success then
+	if not success or not result then
 		return nil
 	end
 
-	return HttpService:JSONDecode(result)
+	local decodeSuccess, decoded = pcall(function()
+		return HttpService:JSONDecode(result)
+	end)
+
+	if not decodeSuccess then
+		return nil
+	end
+
+	return decoded
 end
 
 local function FindLowestServer()
@@ -101,7 +111,7 @@ local function FindLowestServer()
 
 	repeat
 		local data = GetServers(cursor)
-		if not data then break end
+		if not data or not data.data then break end
 
 		for _, server in ipairs(data.data) do
 			if server.id ~= game.JobId and server.playing < server.maxPlayers then
@@ -125,6 +135,25 @@ local function HopToLowest()
 		TeleportService:Teleport(PLACE_ID, Player)
 	end
 end
+
+-- FIX: Find executive team by name instead of index so team order doesn't matter.
+-- Also renamed to accurately reflect what it returns (a count, not a boolean).
+local function GetExecutiveCount()
+	for _, team in ipairs(Teams:GetTeams()) do
+		if string.lower(team.Name) == "executives" then
+			return #team:GetPlayers()
+		end
+	end
+	warn("Executives team not found")
+	return 0
+end
+
+if GetExecutiveCount() ~= 0 then
+	HopToLowest()
+	return
+end
+
+wait(2)
 
 local function GetDrink()
 
@@ -216,23 +245,6 @@ SetUpScript()
 
 repeat wait() until fridge ~= nil
 
-local function IsExecutivesEmpty()
-	local execTeam = Teams:GetChildren()[1]
-	if not execTeam then
-		warn("Executives team not found")
-		return true
-	end
-
-	return #execTeam:GetPlayers()
-end
-
-if IsExecutivesEmpty() ~= 0 then
-	HopToLowest()
-    return
-end
-
-wait(2)
-
 task.spawn(function()
 	Character.ChildAdded:Connect(function(child)
 		HandDrink()
@@ -240,7 +252,7 @@ task.spawn(function()
 
 	task.spawn(function()
 		while true do
-			task.wait(5)
+			task.wait(25)
 			wt = 5
 			task.wait(1)
 			wt = 0.1
@@ -250,7 +262,7 @@ task.spawn(function()
 	while true do
 		task.wait(wt)
 
-		if IsExecutivesEmpty() ~= 0 then
+		if GetExecutiveCount() ~= 0 then
 			HopToLowest()
 		end
 
