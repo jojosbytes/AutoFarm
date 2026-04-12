@@ -231,6 +231,8 @@ if IsExecutivesEmpty() ~= 0 then
     return
 end
 
+wait(2)
+
 task.spawn(function()
 	Character.ChildAdded:Connect(function(child)
 		HandDrink()
@@ -238,7 +240,7 @@ task.spawn(function()
 
 	task.spawn(function()
 		while true do
-			task.wait(15)
+			task.wait(5)
 			wt = 5
 			task.wait(1)
 			wt = 0.1
